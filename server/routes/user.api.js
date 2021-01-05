@@ -16,4 +16,11 @@ router.get("/me", userController.getCurrentUser);
  */
 router.get("/", userController.getUsers);
 
+/**
+ * @route POST api/users
+ * @description Register new account
+ * @access Public
+ */
+router.post("/", userController.register);
+
 module.exports = router;

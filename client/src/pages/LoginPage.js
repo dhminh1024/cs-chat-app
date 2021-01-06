@@ -3,6 +3,11 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Redirect, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import authActions from "../redux/actions/auth.actions";
+import FacebookLogin from "react-facebook-login";
+import { GoogleLogin } from "react-google-login";
+
+const FB_APP_ID = process.env.REACT_APP_FB_APP_ID;
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -28,6 +33,13 @@ const LoginPage = () => {
       return;
     }
     dispatch(authActions.loginRequest({ email, password }));
+  };
+
+  const loginWithFacebook = (response) => {
+    dispatch(authActions.loginFacebook(response.accessToken));
+  };
+  const loginWithGoogle = (response) => {
+    dispatch(authActions.loginGoogle(response.accessToken));
   };
 
   if (isAuthenticated) return <Redirect to="/" />;
@@ -91,6 +103,23 @@ const LoginPage = () => {
             <p>
               Don't have an account? <Link to="/register">Sign Up</Link>
             </p>
+            <hr />
+            <div className="d-flex flex-column text-center">
+              <FacebookLogin
+                appId={FB_APP_ID}
+                fields="name,email,picture"
+                callback={loginWithFacebook}
+                icon="fa-facebook"
+                onFailure={(err) => console.log("FB LOGIN ERROR", err)}
+              />
+              <GoogleLogin
+                clientId={GOOGLE_CLIENT_ID}
+                buttonText="Login with Google"
+                onSuccess={loginWithGoogle}
+                onFailure={(err) => console.log("GOOGLE LOGIN ERROR", err)}
+                cookiePolicy="single_host_origin"
+              />
+            </div>
           </Form>
         </Col>
       </Row>

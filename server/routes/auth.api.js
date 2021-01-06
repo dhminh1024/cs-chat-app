@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport");
 const authController = require("../controllers/auth.controller");
 const router = express.Router();
 
@@ -14,13 +15,21 @@ router.post("/login", authController.loginWithEmail);
  * @description Login with facebook
  * @access Public
  */
-router.post("/login/facebook", authController.loginWithFaceBookOrGoogle);
+router.post(
+  "/login/facebook",
+  passport.authenticate("facebook-token"),
+  authController.loginWithFaceBookOrGoogle
+);
 
 /**
  * @route POST api/auth/login/google
  * @description Login with google
  * @access Public
  */
-router.post("/login/google", authController.loginWithFaceBookOrGoogle);
+router.post(
+  "/login/google",
+  passport.authenticate("google-token"),
+  authController.loginWithFaceBookOrGoogle
+);
 
 module.exports = router;

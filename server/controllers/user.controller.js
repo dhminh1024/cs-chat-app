@@ -34,7 +34,13 @@ userController.register = catchAsync(async (req, res, next) => {
   );
 });
 
-userController.getCurrentUser = catchAsync((req, res, next) => {});
+userController.getCurrentUser = catchAsync(async (req, res, next) => {
+  const userId = req.userId;
+  const user = await User.findById(userId);
+  if (!user)
+    return next(new AppError(400, "User not found", "Get Current User Error"));
+  return sendResponse(res, 200, true, user, null, "Get current user sucessful");
+});
 
 userController.getUsers = catchAsync((req, res, next) => {});
 

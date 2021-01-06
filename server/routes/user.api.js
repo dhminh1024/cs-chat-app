@@ -1,5 +1,6 @@
 const express = require("express");
 const userController = require("../controllers/user.controller");
+const authentication = require("../middlewares/authentication");
 const router = express.Router();
 
 /**
@@ -7,14 +8,14 @@ const router = express.Router();
  * @description Get current user info
  * @access Login required
  */
-router.get("/me", userController.getCurrentUser);
+router.get("/me", authentication.loginRequired, userController.getCurrentUser);
 
 /**
  * @route GET api/users
  * @description Get list of all users
  * @access Login required
  */
-router.get("/", userController.getUsers);
+router.get("/", authentication.loginRequired, userController.getUsers);
 
 /**
  * @route POST api/users

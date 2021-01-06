@@ -35,8 +35,8 @@ api.interceptors.response.use(
     return response;
   },
   function (error) {
-    error = error.response.data;
     console.log("RESPONSE ERROR", error);
+    error = error.response.data;
     if (error.errors?.message) toast.error(error.errors.message);
     return Promise.reject(error);
   }

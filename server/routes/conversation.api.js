@@ -1,5 +1,6 @@
 const express = require("express");
 const userController = require("../controllers/user.controller");
+const authentication = require("../middlewares/authentication");
 const router = express.Router();
 
 /**
@@ -7,6 +8,10 @@ const router = express.Router();
  * @description Get list of conversations of current user
  * @access Login required
  */
-router.get("/", userController.getConversationList);
+router.get(
+  "/",
+  authentication.loginRequired,
+  userController.getConversationList
+);
 
 module.exports = router;

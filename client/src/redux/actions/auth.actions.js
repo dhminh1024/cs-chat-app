@@ -65,7 +65,7 @@ const getCurrentUser = (accessToken) => async (dispatch) => {
 };
 
 const logout = () => (dispatch) => {
-  delete api.defaults.common["authorization"];
+  delete api.defaults.headers.common["authorization"];
   localStorage.removeItem("accessToken");
   dispatch({ type: types.LOGOUT, payload: null });
 };

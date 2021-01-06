@@ -1,0 +1,42 @@
+.avatar-sm {
+  vertical-align: middle;
+  width: 45px;
+  height: 45px;
+  border-radius: 15%;
+}
+.avatar-xs {
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  border-radius: 15%;
+}
+
+.avatar-lg {
+  vertical-align: middle;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+}
+
+.messages {
+  padding: 1em;
+  overflow: auto;
+  flex: auto;
+  height: calc(100vh - 200px);
+}
+
+.conversation-list {
+  top: 0;
+  height: calc(100vh - 150px);
+  padding-top: 0.5rem;
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+.google-btn {
+  box-shadow: none !important;
+  border-left: none !important;
+  border: 1px solid gainsboro !important;
+  opacity: 1 !important;
+  font-size: 16px !important;
+}

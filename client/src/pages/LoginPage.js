@@ -111,8 +111,26 @@ const LoginPage = () => {
                 callback={loginWithFacebook}
                 icon="fa-facebook"
                 onFailure={(err) => console.log("FB LOGIN ERROR", err)}
+                containerStyle={{
+                  textAlign: "center",
+                  backgroundColor: "#3b5998",
+                  borderColor: "#3b5998",
+                  flex: 1,
+                  display: "flex",
+                  color: "#fff",
+                  cursor: "pointer",
+                  marginBottom: "3px",
+                }}
+                buttonStyle={{
+                  flex: 1,
+                  textTransform: "none",
+                  padding: "12px",
+                  background: "none",
+                  border: "none",
+                }}
               />
               <GoogleLogin
+                className="google-btn d-flex justify-content-center"
                 clientId={GOOGLE_CLIENT_ID}
                 buttonText="Login with Google"
                 onSuccess={loginWithGoogle}

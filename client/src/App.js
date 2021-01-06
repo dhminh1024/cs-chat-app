@@ -10,6 +10,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import AlertMsg from "./components/AlertMsg";
 import { useDispatch, useSelector } from "react-redux";
 import authActions from "./redux/actions/auth.actions";
+import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ function App() {
           <PublicNavbar />
           <AlertMsg />
           <Switch>
-            <Route exact path="/" component={HomePage} />
+            <PrivateRoute exact path="/" component={HomePage} />
             <Route exact path="/login" component={LoginPage} />
             <Route exact path="/register" component={RegisterPage} />
             <Route component={NotFoundPage} />

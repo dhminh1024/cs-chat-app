@@ -30,8 +30,22 @@ const HomePage = () => {
   };
 
   const handleClickFriend = () => {};
-  const handleClickConversation = () => {};
-  const handleSendMessage = () => {};
+
+  const handleClickConversation = (converstation) => {
+    setSelectedConversation(converstation);
+    if (converstation.type === conversationTypes.GLOBAL) {
+      socket.emit(socketTypes.GLOBAL_MSG_INIT);
+    }
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    socket.emit(socketTypes.GLOBAL_MSG_SEND, {
+      from: currentUser._id,
+      body: newMessage,
+    });
+    setNewMessage("");
+  };
 
   useEffect(() => {
     if (accessToken) {
@@ -49,6 +63,15 @@ const HomePage = () => {
       socket.on(socketTypes.NOTIFICATION, (data) => {
         if (data.onlineUsers) {
           setOnlineUsers(data.onlineUsers);
+        }
+        if (data.globalMessages) {
+          setGlobalMessages(data.globalMessages);
+        }
+        if (data.globalMsg) {
+          setGlobalMessages((globalMessages) => [
+            ...globalMessages,
+            data.globalMsg,
+          ]);
         }
       });
     }

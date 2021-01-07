@@ -6,10 +6,11 @@ import ReactEmoji from "react-emoji";
 
 const Message = ({ msg }) => {
   const currentUser = useSelector((state) => state.auth.user);
+  console.log(msg);
   return (
     <Media as="li">
       <img
-        src={msg.user.avatarUrl}
+        src={msg.from.avatarUrl}
         alt="User Avatar"
         className="avatar-sm mr-3"
       />
@@ -17,10 +18,10 @@ const Message = ({ msg }) => {
         <div>
           <span
             className={
-              currentUser._id === msg.user._id ? "text-primary" : "text-success"
+              currentUser._id === msg.from._id ? "text-primary" : "text-success"
             }
           >
-            <strong>@{msg.user.name}</strong>
+            <strong>@{msg.from.name}</strong>
           </span>
           <span className="text-secondary ml-2">
             <Moment fromNow>{msg.createdAt}</Moment>

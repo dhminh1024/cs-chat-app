@@ -3,7 +3,9 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const { AppError } = require("../helpers/utils.helper");
 const GlobalMessage = require("../models/GlobalMessage");
+const Message = require("../models/Message");
 const User = require("../models/User");
+const Conversation = require("../models/Conversation");
 
 const socketTypes = {
   NOTIFICATION: "NOTIFICATION",
@@ -74,11 +76,76 @@ io.on("connection", async function (socket) {
       const user = await User.findById(msg.from);
       if (user && user._id.equals(socket.userId) && msg.body) {
         const globalMsg = await GlobalMessage.create({
-          user: msg.from,
+          from: msg.from,
           body: msg.body,
         });
         globalMsg.user = user;
         io.emit(socketTypes.NOTIFICATION, { globalMsg });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on(socketTypes.PRIVATE_MSG_INIT, async (msg) => {
+    try {
+      const fromUser = await User.findById(msg.from);
+      const toUser = await User.findById(msg.to);
+      if (fromUser && toUser) {
+        let conversation = await Conversation.findOne({
+          users: { $all: [fromUser._id, toUser._id] },
+        });
+        if (conversation) {
+          let privateMessages = await Message.find({
+            conversation: conversation._id,
+          })
+            .sort({ createdAt: -1 })
+            .limit(100)
+            .populate("from")
+            .populate("to");
+          privateMessages = privateMessages.reverse();
+          conversation = conversation.toJSON();
+          conversation.to = toUser;
+          io.to(onlineUsers[msg.from]).emit(socketTypes.NOTIFICATION, {
+            selectedConversation: conversation,
+            privateMessages,
+          });
+        } else {
+          conversation = await Conversation.create({
+            users: [fromUser._id, toUser._id],
+          });
+          conversation = conversation.toJSON();
+          conversation.to = toUser;
+          io.to(onlineUsers[msg.from]).emit(socketTypes.NOTIFICATION, {
+            selectedConversation: conversation,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on(socketTypes.PRIVATE_MSG_SEND, async (msg) => {
+    try {
+      const fromUser = await User.findById(msg.from);
+      const toUser = await User.findById(msg.to);
+      const conversation = await Conversation.findById(msg.conversation);
+      if (fromUser && toUser && msg.body && conversation) {
+        let newMessage = await Message.create(msg);
+        await Conversation.findByIdAndUpdate(msg.conversation, {
+          lastMessage: msg.body,
+          lastMessageUpdatedAt: Date.now(),
+        });
+        newMessage = newMessage.toJSON();
+        newMessage.user = fromUser;
+
+        io.to(onlineUsers[msg.from]).emit(socketTypes.NOTIFICATION, {
+          sentMessage: newMessage,
+        });
+        io.to(onlineUsers[msg.to]).emit(socketTypes.NOTIFICATION, {
+          receivedMessage: newMessage,
+        });
       }
     } catch (error) {
       console.log(error);

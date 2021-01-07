@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const globalMsgSchema = Schema(
   {
-    user: { type: Schema.ObjectId, required: true, ref: "User" },
+    from: { type: Schema.ObjectId, required: true, ref: "User" },
     body: { type: String, required: true },
   },
   { timestamps: true }

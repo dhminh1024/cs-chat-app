@@ -29,21 +29,44 @@ const HomePage = () => {
     setNewMessage(e.target.value);
   };
 
-  const handleClickFriend = () => {};
+  const handleClickFriend = (friend) => {
+    socket.emit(socketTypes.PRIVATE_MSG_INIT, {
+      from: currentUser._id,
+      to: friend._id,
+    });
+  };
 
-  const handleClickConversation = (converstation) => {
-    setSelectedConversation(converstation);
-    if (converstation.type === conversationTypes.GLOBAL) {
+  const handleClickConversation = (conversation) => {
+    setSelectedConversation(conversation);
+    if (conversation.type === conversationTypes.GLOBAL) {
       socket.emit(socketTypes.GLOBAL_MSG_INIT);
+    } else {
+      console.log(conversation);
+      socket.emit(socketTypes.PRIVATE_MSG_INIT, {
+        from: currentUser._id,
+        to:
+          conversation.users[0]._id === currentUser._id
+            ? conversation.users[1]._id
+            : conversation.users[0]._id,
+      });
     }
   };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    socket.emit(socketTypes.GLOBAL_MSG_SEND, {
-      from: currentUser._id,
-      body: newMessage,
-    });
+    if (selectedConversation.type === conversationTypes.GLOBAL) {
+      socket.emit(socketTypes.GLOBAL_MSG_SEND, {
+        from: currentUser._id,
+        body: newMessage,
+      });
+    } else {
+      socket.emit(socketTypes.PRIVATE_MSG_SEND, {
+        conversation: selectedConversation._id,
+        from: currentUser._id,
+        to: selectedConversation.to._id,
+        body: newMessage,
+      });
+    }
     setNewMessage("");
   };
 
@@ -52,6 +75,7 @@ const HomePage = () => {
       socket = socketIOClient(process.env.REACT_APP_BACKEND_API, {
         query: { accessToken },
       });
+      socket.emit(socketTypes.GLOBAL_MSG_INIT);
     }
     return () => {
       if (socket) socket.disconnect();
@@ -72,6 +96,24 @@ const HomePage = () => {
             ...globalMessages,
             data.globalMsg,
           ]);
+        }
+        if (data.selectedConversation) {
+          console.log(data.selectedConversation);
+          setSelectedConversation({
+            ...data.selectedConversation,
+            type: conversationTypes.PRIVATE,
+          });
+        }
+        if (data.privateMessages) {
+          setPrivateMessages(data.privateMessages);
+        }
+        if (data.sentMessage) {
+          setPrivateMessages((messages) => [...messages, data.sentMessage]);
+        }
+        if (data.receivedMessage) {
+          toast.info(
+            `${data.receivedMessage.user.name} has sent you a message`
+          );
         }
       });
     }

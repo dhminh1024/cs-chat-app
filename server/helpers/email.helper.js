@@ -12,7 +12,8 @@ const template = {
   name: "Welcome Email",
   description: "Send a welcome email to new user",
   template_key: "welcome_email",
-  from: "CS Team <cs_chat_app@mg.coderschool.vn>",
+  from:
+    "CS Team <cs_chat_app@sandboxcca3a2948c59488d8438a0a3edc0f898.mailgun.org>",
   subject: "Hi %name%, welcome",
   html: `Hi %name%,
   

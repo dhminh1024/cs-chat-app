@@ -11,6 +11,7 @@ require("./middlewares/passport");
 
 var indexRouter = require("./routes/index");
 const { AppError, sendResponse } = require("./helpers/utils.helper");
+const emailHelper = require("./helpers/email.helper");
 
 var app = express();
 
@@ -32,6 +33,7 @@ mongoose
   })
   .then(() => {
     console.log(`Mongoose connected to ${MONGODB_URI}`);
+    emailHelper.createTemplateIfNotExists();
   })
   .catch((err) => {
     console.log(err);
